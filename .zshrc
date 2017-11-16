@@ -1,4 +1,4 @@
-#
+
 # ~/.zshrc
 #
 
@@ -36,7 +36,7 @@ feed_headers() {
 alias upt='pacaur -Suy --noconfirm'
 alias lsorphans='sudo pacman -Qdt'
 alias rmorphans='sudo pacman -Rs $(pacman -Qtdq)'
-alias ls='ls --color=auto -hali'
+alias ls='ls --color=auto -hal'
 
 PROMPT='\[`[ $? = 0 ] && X=2 || X=1; tput setaf $X`\]\h\[`tput sgr0`\]:$PWD\n\$ '
 
