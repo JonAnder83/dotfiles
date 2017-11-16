@@ -31,10 +31,14 @@ set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.i
 
 set guifont=Menlo:h14
 set encoding=utf8
+" When copying text with the mouse, don't copy the line numbers
 set mouse=a
+" Tab introduces 4 spaces, for real tab, ctrl+tab
 set expandtab
+" Tab inserts 8 spaces
 set ts=8
+" Show the command being typed
 set showcmd
 set viminfo='20,\"50
+" Smart Indenting
 set si
-
