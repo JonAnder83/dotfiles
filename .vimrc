@@ -14,12 +14,17 @@ vno <down> <Nop>
 
 filetype plugin on
 filetype indent on
-syntax on
+syntax enable
+" Show matching brackets when text indicator is over them
+set showmatch
 " Show line numbers
 set number
 " Highlight the search results
 set hlsearch
-set nocompatible                " Use Vim defaults instead of 100% vi compatibility
+" Makes search act like search in modern browsers
+set incsearch
+" Use Vim defaults instead of 100% vi compatibility
+set nocompatible                
 set backspace=indent,eol,start  " more powerful backspacing
 " Now we set some defaults for the editor
 set history=50                  " keep 50 lines of command line history
@@ -42,3 +47,20 @@ set showcmd
 set viminfo='20,\"50
 " Smart Indenting
 set si
+" Return to last edit position when opening files (You want this!)
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+" Always show the status line
+set laststatus=2
+
+" Set font according to system
+if has("mac") || has("macunix")
+    set gfn=Hack:h14,Source\ Code\ Pro:h15,Menlo:h15
+elseif has("win16") || has("win32")
+    set gfn=Hack:h14,Source\ Code\ Pro:h12,Bitstream\ Vera\ Sans\ Mono:h11
+elseif has("gui_gtk2")
+    set gfn=Hack\ 14,Source\ Code\ Pro\ 12,Bitstream\ Vera\ Sans\ Mono\ 11
+elseif has("linux")
+    set gfn=Hack\ 14,Source\ Code\ Pro\ 12,Bitstream\ Vera\ Sans\ Mono\ 11
+elseif has("unix")
+    set gfn=Monospace\ 11
+endif
