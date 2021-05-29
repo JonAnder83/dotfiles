@@ -1,53 +1,67 @@
 #
 # ~/.bashrc
 #
+# Needed for the extract() function to work properly
+shopt -s extglob
+
 
 # EXPORTS
 export EDITOR=vim
 
-# Dependencies: sysstat, screenfetch and xmlstarlet
+# Dependencies: figlet sysstat pydf lolcat lsb-release
 
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
 
 # FUNCTIONS
-feed() {
-  echo -e "$(echo $(curl --silent https://www.archlinux.org/feeds/news//// | sed -e ':a;N;$!ba;s/\n/ /g') | \
-  sed -e 's/&gt;/  /g' |
-  sed -e 's/&lt;\/a  /  /g' |
-  sed -e 's/href\=\"/  /g' |
-  sed -e 's/<title>/\\n\\n\\n   :: \\e[01;31m/g' -e 's/<\/title>/\\e[00m ::\\n/g' |
-  sed -e 's/<link>/ [ \\e[01;36m/g' -e 's/<\/link>/\\e[00m ]/g' |
-  sed -e 's/<description>/\\n\\n\\e[00;37m/g' -e 's/<\/description>/\\e[00m\\n\\n/g' |
-  sed -e 's/&lt;p  /\n/g' |
-  sed -e 's/&lt;b  \|&lt;strong  /\\e[01;30m/g' -e 's/&lt;\/b  \|&lt;\/strong  /\\e[00;37m/g' |
-  sed -e 's/&lt;a[^  ]*  \([^\"]*\)\"[^  ]*  \([^  ]*\)[^  ]*  /\\e[01;32m\2\\e[00;37m \\e[01;34m[ \\e[01;35m\1\\e[00;37m\\e[01;34m ]\\e[00;37m/g' |
-  sed -e 's/&lt;li  /\n \\e[01;34m*\\e[00;37m /g' |
-  sed -e 's/<[^>]*>/ /g' |
-  sed -e 's/&lt;[^  ]*  //g' |
-  sed -e 's/[      ]//g')\n\n"
-}
+#Compressed filkes extractor
+extract() {
+    local c e i
 
-feed_headers() {
-        curl -s "https://www.archlinux.org/feeds/news/" | xmlstarlet sel -T -t -m /rss/channel/item -v "concat(pubDate,': ',title)" -n
+    (($#)) || return
+
+    for i; do
+        c=''
+        e=1
+
+        if [[ ! -r $i ]]; then
+            echo "$0: file is unreadable: \`$i'" >&2
+            continue
+        fi
+
+        case $i in
+            *.t@(gz|lz|xz|b@(2|z?(2))|a@(z|r?(.@(Z|bz?(2)|gz|lzma|xz)))))
+                   c=(bsdtar xvf);;
+            *.7z)  c=(7z x);;
+            *.Z)   c=(uncompress);;
+            *.bz2) c=(bunzip2);;
+            *.exe) c=(cabextract);;
+            *.gz)  c=(gunzip);;
+            *.rar) c=(unrar x);;
+            *.xz)  c=(unxz);;
+            *.zip) c=(unzip);;
+            *)     echo "$0: unrecognized file extension: \`$i'" >&2
+                   continue;;
+        esac
+
+        command "${c[@]}" "$i"
+        ((e = e || $?))
+    done
+    return "$e"
 }
 
 # ALIAS
-alias upt='pacaur -Suy --noconfirm'
-alias lsorphans='sudo pacman -Qdt'
-alias rmorphans='sudo pacman -Rs $(pacman -Qtdq)'
 alias ls='ls --color=auto -hali'
 
 PS1='\[`[ $? = 0 ] && X=2 || X=1; tput setaf $X`\]\h\[`tput sgr0`\]:$PWD\n\$ '
 
 # Banner
+#cat /etc/issue
+#sleep 2
 clear
-screenfetch
-echo "=================================== System Usage ==================================="
+figlet $HOSTNAME | lolcat
+lsb_release -ds
+uptime
+echo "========================================= System Usage ========================================="
 mpstat
-echo "===================================== FS Usage ====================================="
-df -hT --type=btrfs --type=zfs --type=ext4 --type=vfat
-echo "======================================= Alias ======================================"
-alias
-echo "===================================== Arch News ===================================="
-feed_headers
+echo "=========================================== FS Usage ==========================================="
+#df -hT --type=btrfs --type=zfs --type=ext4 --type=vfat
+pydf
