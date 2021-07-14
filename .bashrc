@@ -1,6 +1,8 @@
 #
 # ~/.bashrc
 #
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
 # Needed for the extract() function to work properly
 shopt -s extglob
 
